@@ -1,3 +1,4 @@
 model/*
 !model/download.py
 save/*.pt
+draft*
