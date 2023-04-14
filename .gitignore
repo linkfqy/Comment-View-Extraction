@@ -1,4 +1,6 @@
-model/*
-!model/download.py
+models/*
+!models/download.py
 save/*.pt
 draft*
+__pycache__
+.vscode
