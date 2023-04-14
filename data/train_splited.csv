@@ -3105,8 +3105,7 @@ id,text,BIO_anno,class
 2112,都提供了什么资料，卡员有上门吗,O O O O O O O O O O O O O O O,2
 5319,延期20天左右，也算给点时间吧，交通还是很人性的,O O O O O O O O O O O O O O O O B-BANK I-BANK O O O B-COMMENTS_ADJ I-COMMENTS_ADJ O,1
 6992,银行这么不放心你,O O O O B-COMMENTS_ADJ I-COMMENTS_ADJ I-COMMENTS_ADJ O,2
-6135,"建行不再受理固定额度调整的个人申请，银行会根据个人的用卡情况不定期调整固定额度。
-",B-BANK I-BANK O O O O O O B-COMMENTS_N I-COMMENTS_N O O O O O O O O O O O O O O O O O O O O O O O O O O O B-COMMENTS_N I-COMMENTS_N O O,2
+6135,"建行不再受理固定额度调整的个人申请，银行会根据个人的用卡情况不定期调整固定额度。""",B-BANK I-BANK O O O O O O B-COMMENTS_N I-COMMENTS_N O O O O O O O O O O O O O O O O O O O O O O O O O O O B-COMMENTS_N I-COMMENTS_N O O,2
 1587,招行值得办的卡,B-BANK I-BANK O O O O B-PRODUCT,2
 1441,是你让给你推荐银联的,O O O O O O O B-COMMENTS_N I-COMMENTS_N O,2
 1613,现在是young卡，客服说金卡6万满，我看有人金卡都到7万多了,O O O B-PRODUCT I-PRODUCT I-PRODUCT I-PRODUCT I-PRODUCT I-PRODUCT O O O O O O O O O O O O O O O O O O O O O O,2
