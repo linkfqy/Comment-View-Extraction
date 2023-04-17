@@ -8,9 +8,9 @@ python ./source/run.py \
     --pretrained_model ./models/bert-base-chinese \
     --task_type test \
     --test_file ./data/test_public.csv \
-    --checkpoint ./save/draft_epoch4_loss0.264430_score0.238039_20230414-214217.pt \
+    --checkpoint ./save/linear_nodev_epoch20_loss0.018041_score0.980798_20230416-130044.pt \
     \
     --seed 19260817 \
     --max_length 512 \
-    --save_name linear2 \
+    --save_name linear_nodev \
     # --debug \

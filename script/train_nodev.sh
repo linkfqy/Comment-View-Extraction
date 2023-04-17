@@ -7,10 +7,10 @@ python ./source/run.py \
     \
     --pretrained_model ./models/bert-base-chinese \
     --task_type train \
-    --train_file ./data/train_splited.csv \
-    --dev_file ./data/dev_splited.csv \
+    --train_file ./data/train_data_public.csv \
+    --dev_file ./data/train_data_public.csv \
     \
     --seed 19260817 \
     --max_length 512 \
-    --save_name linear \
+    --save_name linear_nodev \
     # --debug \

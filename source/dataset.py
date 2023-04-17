@@ -49,7 +49,7 @@ class MyDataset(Dataset):
         model_inputs = []
         for data in self.raw_data:
             # 处理脏数据
-            newtext = ' '.join(re.sub(r"\r\n|\r|\n| |\t",'，',data['text']))
+            newtext = ' '.join(re.sub(r"\r\n|\r|\n| |\t|　",'，',data['text']))
             input = self.tokenizer(newtext)
             if self.type == 'train':
                 input['BIO_ids'] = [bio2ids('O')]+list(map(bio2ids, data['BIO_anno']))+[bio2ids('O')]

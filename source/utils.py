@@ -81,7 +81,11 @@ if __name__ == '__main__':
     )
     print(f"{kappa(balance_matrix):.6f}")
     
-    print(ner2set(1,[4,4,0,1,1,4,4,0,1,5,7,4]))
-    for i in range(5,9):
-        bio=ids2bio(i)
-        print(bio,bio[2:])
+    s1=ner2set(1,[4,4,0,1,1,4,4,0,1,5,7,4])
+    s2=ner2set(1,[4,4,0,1,4,4,4,0,1,5,7,4])
+    print(s1)
+    print(s2)
+    print(f1(s1,s2))
+    s1.update(s2)
+    print(s1)
+    print(s1.intersection(s2))

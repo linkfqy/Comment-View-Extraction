@@ -105,7 +105,7 @@ class Trainer():
             )
             ner, sa = output['ner'], output['sa']
             g_ner, g_sa = batch['BIO_ids'].numpy(), batch['class'].numpy()
-            id, raw_len = batch['id'], batch['raw_len']
+            id, raw_len = batch['id'].numpy(), batch['raw_len'].numpy()
             for i in range(len(id)):
                 s_set.update(ner2set(id[i], ner[i]))
                 g_set.update(ner2set(id[i], g_ner[i]))
