@@ -1,5 +1,6 @@
 import torch
 import torch.nn as nn
+import numpy as np
 from transformers import AutoTokenizer, BertModel
 from utils import *
 
@@ -20,6 +21,9 @@ class BertLinearModel(MyModel):
         self.bert = BertModel.from_pretrained(self.pretrained_model)
         self.classifier4NER = nn.Linear(self.bert.config.hidden_size, label_number)
         self.classifier4SA = nn.Linear(self.bert.config.hidden_size, class_number)
+        """ # 尝试SA使用池化操作 
+        te = torch.randn([8,512,class_number])
+        self.classifier4SA = nn.AdaptiveAvgPool3d(te) """
 
         self.loss_fn = nn.CrossEntropyLoss()
 
@@ -27,6 +31,8 @@ class BertLinearModel(MyModel):
                 labels=None, classes=None, predict=False):
         bert_output = self.bert(input_ids, attention_mask, token_type_ids)
         ner_logits = self.classifier4NER(bert_output.last_hidden_state)
+        """ # 尝试不使用CLS
+        sa_logits = self.classifier4SA(bert_output.last_hidden_state[:,0]) """
         sa_logits = self.classifier4SA(bert_output.pooler_output)
 
         output = {'ner_logits': ner_logits, 'sa_logits': sa_logits}

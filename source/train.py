@@ -9,6 +9,7 @@ from utils import AvgCalc
 from tqdm import tqdm
 from utils import *
 
+""" timer = True """
 
 class Trainer():
     def __init__(self, model: MyModel, arg_dict):
@@ -78,10 +79,27 @@ class Trainer():
                 labels=batch['BIO_ids'].to(self.device),
                 classes=batch['class'].to(self.device),
             )
-            # loss为两个任务loss直接相加
             loss = output['ner_loss']+output['sa_loss']
             avgloss.put(loss)
+            
+            # 尝试两个任务直接相加loss
             loss.backward()
+            
+            """ # 尝试固定方向loss
+            output['sa_loss'].backward(retain_graph=True)
+            output['ner_loss'].backward() """
+            
+            """ # 尝试交替loss
+            global timer
+            if timer:
+                output['ner_loss'].backward(retain_graph=True)
+                output['sa_loss'].backward()
+                timer = False
+            else:
+                output['sa_loss'].backward(retain_graph=True)
+                output['ner_loss'].backward()
+                timer = True """
+            
             self.optimizer.step()
             self.scheduler.step()
             bar.set_description(f"Train epoch {epoch}, loss {loss:.6f}")

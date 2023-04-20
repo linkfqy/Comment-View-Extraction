@@ -4,6 +4,7 @@ from torch.nn.utils.rnn import pad_sequence
 import pandas as pd
 import re
 from utils import *
+""" from nlpcda import EquivalentChar """
 
 
 class MyDataset(Dataset):
@@ -50,6 +51,11 @@ class MyDataset(Dataset):
         for data in self.raw_data:
             # 处理脏数据
             newtext = ' '.join(re.sub(r"\r\n|\r|\n| |\t|　",'，',data['text']))
+            
+            """ # 等价词替换
+            s = EquivalentChar(create_num=1, change_rate=0.1)
+            newtext = s.replace(newtext) """
+            
             input = self.tokenizer(newtext)
             if self.type == 'train':
                 input['BIO_ids'] = [bio2ids('O')]+list(map(bio2ids, data['BIO_anno']))+[bio2ids('O')]
