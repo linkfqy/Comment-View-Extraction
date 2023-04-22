@@ -80,7 +80,7 @@ class Trainer():
                 labels=batch['BIO_ids'].to(self.device),
                 classes=batch['class'].to(self.device),
             )
-            # loss为两个任务loss直接相加
+            # loss为两个任务直接相加
             loss = output['ner_loss']+output['sa_loss']
             avgloss.put(loss)
             loss.backward()
