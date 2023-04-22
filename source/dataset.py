@@ -49,7 +49,7 @@ class MyDataset(Dataset):
         model_inputs = []
         for data in self.raw_data:
             # 处理脏数据
-            newtext = ' '.join(re.sub(r"\r\n|\r|\n| |\t|　",'，',data['text']))
+            newtext = ' '.join(re.sub(r"\r\n|\r|\n| |\t|　|\ufe0f",'，',data['text']))
             input = self.tokenizer(newtext)
             if self.type == 'train':
                 input['BIO_ids'] = [bio2ids('O')]+list(map(bio2ids, data['BIO_anno']))+[bio2ids('O')]
@@ -99,12 +99,11 @@ class MyDataset(Dataset):
 if __name__ == '__main__':
     arg_dict = {
         'batch_size': 4,
-        'debug': True,
+        'debug': False,
     }
     from transformers import AutoTokenizer
-    tokenizer = AutoTokenizer.from_pretrained('models/bert-base-chinese')
+    tokenizer = AutoTokenizer.from_pretrained('models/chinese-roberta-wwm-ext')
     dataset = MyDataset('data/train_splited.csv', tokenizer, arg_dict, 'train')
     dataloader = dataset.get_dataloader()
     for batch in dataloader:
-        print(batch)
-        exit(0)
+        pass

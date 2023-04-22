@@ -5,12 +5,13 @@ python ./source/run.py \
     --warmup_steps 2000 \
     --max_epoch 20 \
     \
-    --pretrained_model ./models/chinese-roberta-wwm-ext-large \
+    --pretrained_model ./models/chinese-roberta-wwm-ext \
     --task_type test \
+    --model_class BertGruAttnSaModel \
     --test_file ./data/test_public.csv \
-    --checkpoint ./save/linear_epoch15_loss0.006604_score0.671217_20230418-215427.pt \
+    --checkpoint ./save/gruattn_sa_nodev_epoch17_loss0.000142_score0.500112_20230421-200024.pt \
     \
     --seed 19260817 \
     --max_length 512 \
-    --save_name linear_nodev2 \
+    --save_name gruattn_sa \
     # --debug \

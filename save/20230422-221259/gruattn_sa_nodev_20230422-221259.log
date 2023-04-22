@@ -1,0 +1,4 @@
+23-04-22 22:13:04	start training!
+23-04-22 22:13:04	{'batch_size': 4, 'learning_rate': 1e-05, 'warmup_steps': 10000, 'warmup_steps_rate': 0.1, 'max_epoch': 20, 'pretrained_model': './models/chinese-roberta-wwm-ext-large', 'task_type': 'train', 'model_class': 'BertGruAttnSaModel', 'train_file': './data/train_splited.csv', 'dev_file': './data/dev_splited.csv', 'test_file': 'data/test_public.csv', 'checkpoint': 'save/xxx.pt', 'seed': 19260817, 'max_length': 512, 'save_name': 'gruattn_sa_nodev', 'debug': False, 'start_time': '20230422-221259'}
+23-04-22 22:13:04	model name: BertGruAttnSaModel
+23-04-22 22:13:06	Start Training

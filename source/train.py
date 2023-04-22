@@ -20,7 +20,7 @@ class Trainer():
         np.random.seed(self.seed)
         torch.backends.cudnn.deterministic = True
 
-        self.logger = get_logger(f"save/{self.save_name}_{self.start_time}.log")
+        self.logger = get_logger(f"save/{self.start_time}/{self.save_name}_{self.start_time}.log")
         self.logger.info('start training!')
         self.logger.info(arg_dict)
 
@@ -34,8 +34,10 @@ class Trainer():
         self.train_dataloader = self.train_set.get_dataloader()
         self.dev_dataloader = self.dev_set.get_dataloader()
 
-        self.optimizer = torch.optim.AdamW(self.model.parameters(), lr=self.learning_rate)
+        self.optimizer = torch.optim.AdamW(self.model.get_params(), lr=self.learning_rate)
         self.total_step = len(self.train_dataloader)*self.max_epoch
+        if self.warmup_steps_rate is not None:
+            self.warmup_steps = int(self.total_step*self.warmup_steps_rate)
         self.scheduler = get_linear_schedule_with_warmup(
             self.optimizer, self.warmup_steps, self.total_step
         )
@@ -58,7 +60,7 @@ class Trainer():
             if score > max_score:
                 max_score = score
                 self.save_state_dict(
-                    f"save/{self.save_name}_epoch{epoch}_loss{loss:.6f}_score{score:.6f}_{self.start_time}.pt"
+                    f"save/{self.start_time}/{self.save_name}_epoch{epoch}_loss{loss:.6f}_score{score:.6f}.pt"
                 )
                 self.logger.info(f"saved as checkpoint")
         self.optimizer.zero_grad()
@@ -166,16 +168,16 @@ class Tester:
                 id_predict.append(id[i])
                 ner_predict.append(ner_res)
                 sa_predict.append(sa[i])
-        df=pd.DataFrame(
+        df = pd.DataFrame(
             {
-                'id':id_predict,
-                'BIO_anno':ner_predict,
-                'class':sa_predict,
+                'id': id_predict,
+                'BIO_anno': ner_predict,
+                'class': sa_predict,
             }
-        ).sort_values(by="id",ascending=True)
-        df.to_csv(f"save/{self.save_name}.csv",index=False)
+        ).sort_values(by="id", ascending=True)
+        df.to_csv(f"save/{self.save_name}.csv", index=False)
 
     def load_checkpoint(self):
-        checkpoint=torch.load(self.checkpoint)
+        checkpoint = torch.load(self.checkpoint)
         self.model.load_state_dict(checkpoint['model'])
         self.model.eval()
