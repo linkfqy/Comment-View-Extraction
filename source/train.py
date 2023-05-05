@@ -3,6 +3,7 @@ import numpy as np
 import pandas as pd
 from transformers import get_linear_schedule_with_warmup
 from my_log import get_logger
+import dataset
 from dataset import MyDataset
 from model import MyModel
 from utils import AvgCalc
@@ -20,7 +21,8 @@ class Trainer():
         np.random.seed(self.seed)
         torch.backends.cudnn.deterministic = True
 
-        self.logger = get_logger(f"save/{self.start_time}/{self.save_name}_{self.start_time}.log")
+        self.logger = get_logger(
+            f"save/{self.start_time}/{self.save_name}_{self.start_time}.log")
         self.logger.info('start training!')
         self.logger.info(arg_dict)
 
@@ -28,8 +30,11 @@ class Trainer():
         self.tokenizer = model.get_tokenizer()
         self.logger.info(f"model name: {self.model.__class__.__name__}")
 
-        self.train_set = MyDataset(self.train_file, self.tokenizer, arg_dict, 'train')
-        self.dev_set = MyDataset(self.dev_file, self.tokenizer, arg_dict, 'train')
+        DatasetClass = getattr(dataset, self.dataset_class)
+        self.train_set: MyDataset = DatasetClass(
+            self.train_file, self.tokenizer, arg_dict, 'train')
+        self.dev_set: MyDataset = DatasetClass(
+            self.dev_file, self.tokenizer, arg_dict, 'train')
 
         self.train_dataloader = self.train_set.get_dataloader()
         self.dev_dataloader = self.dev_set.get_dataloader()
@@ -73,13 +78,7 @@ class Trainer():
         bar = tqdm(self.train_dataloader)
         for batch in bar:
             self.optimizer.zero_grad()
-            output = self.model(
-                input_ids=batch['input_ids'].to(self.device),
-                attention_mask=batch['attention_mask'].to(self.device),
-                token_type_ids=batch['token_type_ids'].to(self.device),
-                labels=batch['BIO_ids'].to(self.device),
-                classes=batch['class'].to(self.device),
-            )
+            output = self.model(**batch.to(self.device))
             # loss为两个任务直接相加
             loss = output['ner_loss']+output['sa_loss']
             avgloss.put(loss)
@@ -99,14 +98,9 @@ class Trainer():
 
         bar = tqdm(self.dev_dataloader, "Evaluating Epoch")
         for batch in bar:
-            output = self.model(
-                input_ids=batch['input_ids'].to(self.device),
-                attention_mask=batch['attention_mask'].to(self.device),
-                token_type_ids=batch['token_type_ids'].to(self.device),
-                predict=True,
-            )
+            output = self.model(predict=True, **batch.to(self.device))
             ner, sa = output['ner'], output['sa']
-            g_ner, g_sa = batch['BIO_ids'].numpy(), batch['class'].numpy()
+            g_ner, g_sa = batch['bio_ids'].numpy(), batch['sa_ids'].numpy()
             id, raw_len = batch['id'].numpy(), batch['raw_len'].numpy()
             for i in range(len(id)):
                 s_set.update(ner2set(id[i], ner[i]))
@@ -144,7 +138,9 @@ class Tester:
         self.model = model
         self.tokenizer = model.get_tokenizer()
 
-        self.test_set = MyDataset(self.test_file, self.tokenizer, arg_dict, 'test')
+        DatasetClass = getattr(dataset, self.dataset_class)
+        self.test_set: MyDataset = DatasetClass(
+            self.test_file, self.tokenizer, arg_dict, 'test')
         self.test_dataloader = self.test_set.get_dataloader()
 
     @torch.no_grad()
@@ -154,12 +150,7 @@ class Tester:
 
         id_predict, ner_predict, sa_predict = [], [], []
         for batch in tqdm(self.test_dataloader, "Testing"):
-            output = self.model(
-                input_ids=batch['input_ids'].to(self.device),
-                attention_mask=batch['attention_mask'].to(self.device),
-                token_type_ids=batch['token_type_ids'].to(self.device),
-                predict=True,
-            )
+            output = self.model(predict=True, **batch.to(self.device))
             ner, sa = output['ner'], output['sa']
             id, raw_len = batch['id'].numpy(), batch['raw_len'].numpy()
             for i in range(len(id)):

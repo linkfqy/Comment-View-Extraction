@@ -9,7 +9,7 @@ python ./source/run.py \
     --task_type test \
     --model_class BertGruAttnSaModel \
     --test_file ./data/test_public.csv \
-    --checkpoint ./save/gruattn_sa_nodev_epoch17_loss0.000142_score0.500112_20230421-200024.pt \
+    --checkpoint ./save/20230423-114228/gruattn_sa_nodev_epoch11_loss0.000447_score0.287571.pt \
     \
     --seed 19260817 \
     --max_length 512 \

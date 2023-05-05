@@ -1,5 +1,5 @@
 import argparse
-import model
+import model,dataset
 import os
 from train import Trainer, Tester
 from datetime import datetime
@@ -18,6 +18,7 @@ def init_args():
                         default="models/bert-base-chinese")
     parser.add_argument("--task_type", type=str, default="train")
     parser.add_argument("--model_class", type=str, default="BertLinearModel")
+    parser.add_argument("--dataset_class", type=str, default="MyDataset")
     parser.add_argument("--train_file", type=str, default="data/train_splited.csv")
     parser.add_argument("--dev_file", type=str, default="data/dev_splited.csv")
     parser.add_argument("--test_file", type=str, default="data/test_public.csv")
@@ -35,13 +36,13 @@ def init_args():
 if __name__ == '__main__':
     args = init_args()
     args.start_time = datetime.now().strftime('%Y%m%d-%H%M%S')
-    os.makedirs(f"./save/{args.start_time}")
 
-    model = getattr(model,args.model_class)(args.__dict__)
+    model_ins = getattr(model,args.model_class)(args.__dict__)
     if args.task_type == 'train':
-        trainer = Trainer(model, args.__dict__)
+        os.makedirs(f"./save/{args.start_time}")
+        trainer = Trainer(model_ins, args.__dict__)
         trainer.train()
     else:
-        tester = Tester(model, args.__dict__)
+        tester = Tester(model_ins, args.__dict__)
         tester.load_checkpoint()
         tester.test()

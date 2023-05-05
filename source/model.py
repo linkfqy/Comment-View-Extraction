@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from torch import Tensor
-from transformers import AutoTokenizer, BertModel
+from transformers import AutoTokenizer, BertModel, BertForMaskedLM
 from utils import *
 
 
@@ -15,6 +15,7 @@ class MyModel(nn.Module):
         params for create optimizer
         '''
         return self.parameters()
+
 
 class FocalLoss(nn.Module):
     """ Focal Loss, as described in https://arxiv.org/abs/1708.02002.
@@ -115,19 +116,19 @@ class BertLinearModel(MyModel):
         self.loss_fn = nn.CrossEntropyLoss()
 
     def forward(self, input_ids, attention_mask, token_type_ids=None,
-                labels=None, classes=None, predict=False):
+                bio_ids=None, sa_ids=None, predict=False, **kwargs):
         bert_output = self.bert(input_ids, attention_mask, token_type_ids)
         ner_logits = self.classifier4NER(bert_output.last_hidden_state)
         sa_logits = self.classifier4SA(bert_output.pooler_output)
 
         output = {'ner_logits': ner_logits, 'sa_logits': sa_logits}
-        if labels is not None:
+        if bio_ids is not None:
             output['ner_loss'] = self.loss_fn(
                 ner_logits.view(-1, label_number),
-                labels.view(-1)
+                bio_ids.view(-1)
             )
-        if classes is not None:
-            output['sa_loss'] = self.loss_fn(sa_logits, classes)
+        if sa_ids is not None:
+            output['sa_loss'] = self.loss_fn(sa_logits, sa_ids)
         if predict:
             # shape(batch, seq_len)
             output['ner'] = torch.argmax(ner_logits, dim=-1).cpu().numpy()
@@ -151,15 +152,15 @@ class BertNerModel(MyModel):
         self.loss_fn = nn.CrossEntropyLoss()
 
     def forward(self, input_ids, attention_mask, token_type_ids=None,
-                labels=None, classes=None, predict=False):
+                bio_ids=None, predict=False, **kwargs):
         bert_output = self.bert(input_ids, attention_mask, token_type_ids)
         ner_logits = self.classifier4NER(bert_output.last_hidden_state)
 
         output = {'ner_logits': ner_logits}
-        if labels is not None:
+        if bio_ids is not None:
             output['ner_loss'] = self.loss_fn(
                 ner_logits.view(-1, label_number),
-                labels.view(-1)
+                bio_ids.view(-1)
             )
             output['sa_loss'] = 0
         if predict:
@@ -185,14 +186,14 @@ class BertSaModel(MyModel):
         self.loss_fn = nn.CrossEntropyLoss()
 
     def forward(self, input_ids, attention_mask, token_type_ids=None,
-                labels=None, classes=None, predict=False):
+                sa_ids=None, predict=False, **kwargs):
         bert_output = self.bert(input_ids, attention_mask, token_type_ids)
         sa_logits = self.classifier4SA(bert_output.pooler_output)
 
         output = {'sa_logits': sa_logits}
-        if classes is not None:
+        if sa_ids is not None:
             output['ner_loss'] = 0
-            output['sa_loss'] = self.loss_fn(sa_logits, classes)
+            output['sa_loss'] = self.loss_fn(sa_logits, sa_ids)
         if predict:
             # shape(batch, seq_len)
             size = input_ids.size()
@@ -206,7 +207,7 @@ class BertSaModel(MyModel):
 class BertGruAttnSaModel(MyModel):
     def __init__(self, arg_dict) -> None:
         '''
-        可能用到的arg_dict中的参数：pretrained_model, attn_head, learning_rate
+        可能用到的arg_dict中的参数：pretrained_model, learning_rate
         '''
         super().__init__()
         self.__dict__.update(arg_dict)
@@ -248,7 +249,7 @@ class BertGruAttnSaModel(MyModel):
         return context, soft_attn_weights
 
     def forward(self, input_ids, attention_mask, token_type_ids=None,
-                labels=None, classes=None, predict=False):
+                sa_ids=None, predict=False, **kwargs):
         bert_output = self.bert(input_ids, attention_mask, token_type_ids)
         # shape(batch, seq_len, bert_h)
         seq_output = bert_output.last_hidden_state
@@ -261,14 +262,45 @@ class BertGruAttnSaModel(MyModel):
         # print(sa_logits.size())
 
         output = {'sa_logits': sa_logits}
-        if classes is not None:
+        if sa_ids is not None:
             output['ner_loss'] = 0
-            output['sa_loss'] = self.loss_fn(sa_logits, classes)
+            output['sa_loss'] = self.loss_fn(sa_logits, sa_ids)
         if predict:
             # shape(batch, seq_len)
             size = input_ids.size()
             output['ner'] = np.zeros((size[0], size[1]), dtype=int)
             # shape(batch,)
             output['sa'] = torch.argmax(sa_logits, dim=-1).cpu().numpy()
+
+        return output
+
+
+class BertPromptSaModel(MyModel):
+    def __init__(self, arg_dict) -> None:
+        '''
+        可能用到的arg_dict中的参数：pretrained_model
+        '''
+        super().__init__()
+        self.__dict__.update(arg_dict)
+
+        self.bert = BertForMaskedLM.from_pretrained(self.pretrained_model)
+
+    def forward(self, input_ids, attention_mask, token_type_ids=None,
+                lm_labels=None, predict=False, **kwargs):
+        bert_output = self.bert(input_ids, attention_mask, token_type_ids,
+                                labels=None if predict else lm_labels)
+        logits = bert_output.logits
+
+        output = {}
+        if predict:
+            size = input_ids.size()
+            # shape(batch, seq_len)
+            output['ner'] = np.zeros((size[0], size[1]), dtype=int)
+            token_id = torch.argmax(logits[:, 8, :], dim=-1)
+            # shape(batch,)
+            output['sa'] = np.array(list(map(class2ids,token_id)))
+        else:
+            output['ner_loss'] = 0
+            output['sa_loss'] = bert_output.loss
 
         return output

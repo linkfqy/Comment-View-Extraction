@@ -1,4 +1,5 @@
 import numpy as np
+import torch
 label_list = ["B-BANK", "I-BANK", "B-PRODUCT", "I-PRODUCT", "O",
               "B-COMMENTS_N", "I-COMMENTS_N", "B-COMMENTS_ADJ", "I-COMMENTS_ADJ",]
 label_number = len(label_list)
@@ -14,6 +15,38 @@ def bio2ids(bio):
 
 def ids2bio(ids):
     return label_list[ids]
+
+
+class_list = [[6566, 7481], [3633, 7481],  [704, 4989],]
+
+
+def ids2class(ids):
+    return class_list[ids]
+
+
+def class2ids(cl):
+    if cl == 6566:
+        return 0
+    elif cl == 3633:
+        return 1
+    elif cl == 704:
+        return 2
+    else:
+        return 2
+
+
+def insertPrompt(a, prompt, idx) -> torch.Tensor:
+    '''
+    a: shape of (batch, seq_len)
+    prompt: shape of (prompt_len)
+    idx: index of where to insert prompt
+    return: shape of (batch, seq_len+prompt_len)
+    '''
+    return torch.cat([
+        a[:, :idx],
+        prompt.expand((len(a), -1)),
+        a[:, idx:],
+    ], 1)
 
 
 class AvgCalc:
@@ -32,7 +65,7 @@ class AvgCalc:
 def f1(S: set, G: set):
     # assert len(S) != 0 and len(G) != 0, f'EMPTY SET!!!S={S},G={S}'
     inter = S.intersection(G)
-    if len(inter)==0:
+    if len(inter) == 0:
         return 0
     P = len(inter)/len(S)
     R = len(inter)/len(G)
@@ -80,12 +113,12 @@ if __name__ == '__main__':
         ]
     )
     print(f"{kappa(balance_matrix):.6f}")
-    
-    s1=ner2set(1,[4,4,0,1,1,4,4,0,1,5,7,4])
-    s2=ner2set(1,[4,4,0,1,4,4,4,0,1,5,7,4])
+
+    s1 = ner2set(1, [4, 4, 0, 1, 1, 4, 4, 0, 1, 5, 7, 4])
+    s2 = ner2set(1, [4, 4, 0, 1, 4, 4, 4, 0, 1, 5, 7, 4])
     print(s1)
     print(s2)
-    print(f1(s1,s2))
+    print(f1(s1, s2))
     s1.update(s2)
     print(s1)
     print(s1.intersection(s2))

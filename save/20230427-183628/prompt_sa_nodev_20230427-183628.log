@@ -1,0 +1,40 @@
+23-04-27 18:36:33	start training!
+23-04-27 18:36:33	{'batch_size': 8, 'learning_rate': 1e-05, 'warmup_steps': 10000, 'warmup_steps_rate': 0.1, 'max_epoch': 20, 'pretrained_model': './models/chinese-roberta-wwm-ext-large', 'task_type': 'train', 'model_class': 'BertPromptSaModel', 'dataset_class': 'PromptDataset', 'train_file': './data/train_data_public.csv', 'dev_file': './data/train_data_public.csv', 'test_file': 'data/test_public.csv', 'checkpoint': 'save/xxx.pt', 'seed': 19260817, 'max_length': 512, 'save_name': 'prompt_sa_nodev', 'debug': False, 'start_time': '20230427-183628'}
+23-04-27 18:36:33	model name: BertPromptSaModel
+23-04-27 18:36:37	Start Training
+23-04-27 18:39:42	Epoch[1/20]	loss=1.340039	score=0.241016	s_ner=0.00018505800540369378	s_sa=0.48184688032615297	
+23-04-27 18:39:48	saved as checkpoint
+23-04-27 18:42:49	Epoch[2/20]	loss=0.270222	score=0.369627	s_ner=0.00018505800540369378	s_sa=0.7390689284505144	
+23-04-27 18:42:54	saved as checkpoint
+23-04-27 18:45:55	Epoch[3/20]	loss=0.180828	score=0.428070	s_ner=0.00018505800540369378	s_sa=0.8559545047942962	
+23-04-27 18:46:01	saved as checkpoint
+23-04-27 18:49:01	Epoch[4/20]	loss=0.108852	score=0.415780	s_ner=0.00018505800540369378	s_sa=0.8313756006820648	
+23-04-27 18:52:02	Epoch[5/20]	loss=0.061529	score=0.440223	s_ner=0.00018505800540369378	s_sa=0.8802600394921912	
+23-04-27 18:52:08	saved as checkpoint
+23-04-27 18:55:13	Epoch[6/20]	loss=0.043027	score=0.420461	s_ner=0.00018505800540369378	s_sa=0.8407367307572644	
+23-04-27 18:58:16	Epoch[7/20]	loss=0.029158	score=0.457837	s_ner=0.00018505800540369378	s_sa=0.9154898828423021	
+23-04-27 18:58:23	saved as checkpoint
+23-04-27 19:01:26	Epoch[8/20]	loss=0.019623	score=0.472047	s_ner=0.00018505800540369378	s_sa=0.9439095624667512	
+23-04-27 19:01:33	saved as checkpoint
+23-04-27 19:04:35	Epoch[9/20]	loss=0.017912	score=0.488983	s_ner=0.00018505800540369378	s_sa=0.9777807433812051	
+23-04-27 19:04:41	saved as checkpoint
+23-04-27 19:07:44	Epoch[10/20]	loss=0.014017	score=0.491641	s_ner=0.00018505800540369378	s_sa=0.9830973720502793	
+23-04-27 19:07:50	saved as checkpoint
+23-04-27 19:10:51	Epoch[11/20]	loss=0.010330	score=0.488404	s_ner=0.00018505800540369378	s_sa=0.9766232019265927	
+23-04-27 19:13:54	Epoch[12/20]	loss=0.009419	score=0.478248	s_ner=0.00018505800540369378	s_sa=0.9563112618396749	
+23-04-27 19:16:58	Epoch[13/20]	loss=0.005690	score=0.493767	s_ner=0.00018505800540369378	s_sa=0.9873498392053321	
+23-04-27 19:17:04	saved as checkpoint
+23-04-27 19:20:05	Epoch[14/20]	loss=0.007528	score=0.494565	s_ner=0.00018505800540369378	s_sa=0.9889442302124463	
+23-04-27 19:20:10	saved as checkpoint
+23-04-27 19:23:12	Epoch[15/20]	loss=0.005249	score=0.498522	s_ner=0.00018505800540369378	s_sa=0.9968595988729932	
+23-04-27 19:23:19	saved as checkpoint
+23-04-27 19:26:22	Epoch[16/20]	loss=0.005915	score=0.499570	s_ner=0.00018505800540369378	s_sa=0.9989548786778383	
+23-04-27 19:26:27	saved as checkpoint
+23-04-27 19:29:32	Epoch[17/20]	loss=0.001187	score=0.499831	s_ner=0.00018505800540369378	s_sa=0.9994776625816845	
+23-04-27 19:29:38	saved as checkpoint
+23-04-27 19:32:38	Epoch[18/20]	loss=0.001418	score=0.499831	s_ner=0.00018505800540369378	s_sa=0.9994778856337886	
+23-04-27 19:32:44	saved as checkpoint
+23-04-27 19:35:48	Epoch[19/20]	loss=0.000214	score=0.500093	s_ner=0.00018505800540369378	s_sa=1.0	
+23-04-27 19:35:54	saved as checkpoint
+23-04-27 19:48:08	Epoch[20/20]	loss=0.000511	score=0.500093	s_ner=0.00018505800540369378	s_sa=1.0	
+23-04-27 19:48:08	Training Finished
